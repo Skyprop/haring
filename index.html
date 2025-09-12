@@ -33,18 +33,19 @@
             padding: 0;
             display: flex;
             height: 100%;
-            flex-direction: row;
-            background-color: #f0f0f0;
-            overflow: auto;
+            background-color:rgba(5,5,30, .80);
+            opacity:0.95;
+            overflow: auto; /* Allow scrolling on the body */
         }
         .editor-container {
-            width: 50%;
             padding: 10px;
             box-sizing: border-box;
             display: flex;
             flex-direction: column;
-            overflow: auto;
             height: 100%;
+            width: 50%; /* Initial width set to 50% */
+            transition: width 0.1s ease;
+            overflow-y: auto; /* Allow scrolling if content overflows */
         }
         .editor {
             height: 150px;
@@ -61,24 +62,24 @@
             overflow-y: auto;
         }
         .preview-container {
-            width: 50%;
             padding: 10px;
             box-sizing: border-box;
             background-color: #fff;
             border-left: 2px solid #ddd;
-            height: 100vh;  /* Full height of the viewport */
-            position: fixed;  /* Fixed position to stay in place during scroll */
+            height: 100vh;
+            position: fixed;
             top: 0;
             right: 0;
             display: flex;
             flex-direction: column;
-            justify-content: center;  /* Center vertically */
-            align-items: center;  /* Center horizontally */
-            overflow: hidden;
+            justify-content: center;
+            align-items: center;
+            overflow-y: auto; /* Allow scrolling */
+            transition: width 0.1s ease;
         }
         iframe {
             width: 100%;
-            height: 90%;  /* Adjust iframe height to fit within the preview container */
+            height: 90%;
             border: none;
         }
         .snippets {
@@ -109,15 +110,29 @@
             display: flex;
             flex-direction: column;
         }
-        h3, h4 {
-            margin-bottom: 10px;
-            font-size: 18px;
+        .editor-container h3 {
+            font-size: 17px;
+            color: rgba(240, 240, 255);
+            margin: 30px auto 10px auto;
+        }
+
+        /* Update the resizer to be wider */
+        #resizer {
+            background: #888;
+            cursor: ew-resize;
+            width: 20px; /* Made the divider wider (20px) */
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 48%;  /* Adjusted to move the divider to the left */
+            transition: left 0.1s ease;
+            z-index: 10;
         }
     </style>
 </head>
 <body>
 
-    <div class="editor-container">
+    <div class="editor-container" id="editor-container">
         <h3>HTML Editor</h3>
         <textarea id="html-code" class="editor" placeholder="Write your HTML here..."></textarea>
         
@@ -135,7 +150,10 @@
         </div>
     </div>
 
-    <div class="preview-container">
+    <!-- Resizable Divider -->
+    <div id="resizer"></div>
+
+    <div class="preview-container" id="preview-container">
         <h3>Live Preview</h3>
         <iframe id="preview"></iframe>
     </div>
@@ -208,15 +226,52 @@
                 snippet = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>My Web Page</title></head><body><h1>Welcome to my website</h1></body></html>`;
                 htmlEditor.setValue(snippet);
             } else if (type === 'css') {
-                snippet = `body {display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #f0f0f0;} h1 {color: #333;}`;
+                snippet = `body { display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #f0f0f0; } h1 { color: #333; }`;
                 cssEditor.setValue(snippet);
             } else if (type === 'js') {
-                snippet = `function showAlert() {alert('Hello, world!');} showAlert();`;
+                snippet = `function showAlert() { alert('Hello, world!'); } showAlert();`;
                 jsEditor.setValue(snippet);
             }
-
             updatePreview();
         }
+
+        // Resizing logic for the draggable divider
+        const resizer = document.getElementById('resizer');
+        const editorContainer = document.getElementById('editor-container');
+        const previewContainer = document.getElementById('preview-container');
+        let isResizing = false;
+
+        resizer.addEventListener('mousedown', function(e) {
+            isResizing = true;
+            document.addEventListener('mousemove', handleMouseMove);
+            document.addEventListener('mouseup', function() {
+                isResizing = false;
+                document.removeEventListener('mousemove', handleMouseMove);
+            });
+        });
+
+        function handleMouseMove(e) {
+            if (isResizing) {
+                const editorWidth = e.clientX;
+                const totalWidth = window.innerWidth;
+                const editorWidthPercentage = (editorWidth / totalWidth) * 100;
+
+                editorContainer.style.width = `${editorWidthPercentage}%`;
+                previewContainer.style.width = `${99 - editorWidthPercentage}%`;
+                resizer.style.left = `${editorWidthPercentage}%`;
+            }
+        }
+
+        // Set the initial preview width based on window load
+        window.addEventListener('load', function() {
+            const initialWidth = 50; // Start with 50% width
+            editorContainer.style.width = `${initialWidth}%`;
+            previewContainer.style.width = `${99 - initialWidth}%`;
+            resizer.style.left = `${initialWidth}%`;
+        });
+
+        // Initial preview update
+        updatePreview();
     </script>
 
 </body>
