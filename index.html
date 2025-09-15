@@ -193,11 +193,18 @@
             position: fixed;
             z-index: 99999;
         }
+        .tag-highlight {
+            background-color: rgba(255, 255, 0, 0.2);
+        }
 
     </style>
 </head>
 <body>
-    <div class="header"></div>
+    <div class="header">
+        <div class="toolbar-button snippet-draggable" draggable="true" data-snippet-type="button" title="Drag Button Snippet">🔘</div>
+        <div class="toolbar-button snippet-draggable" draggable="true" data-snippet-type="div" title="Drag Div Snippet">📦</div>
+    </div>
+
 
     <div class="editor-container" id="editor-container">
         <div class="editor-title-container"><h3>HTML Editor</h3></div>
@@ -227,6 +234,8 @@
     </div>
 
     <script>
+        
+
         // Initialize CodeMirror editors
         const htmlEditor = CodeMirror.fromTextArea(document.getElementById('html-code'), {
             mode: 'htmlmixed',
@@ -412,6 +421,99 @@
 
         // Initial preview update
         updatePreview();
+
+const snippets = {
+            button: `<button>Click Me</button>`,
+            div: `<div class="my-snippet">New Snippet Div</div>`
+        };
+
+        let draggingSnippet = null;
+
+        document.querySelectorAll('.snippet-draggable').forEach(btn => {
+            btn.addEventListener('dragstart', (e) => {
+                draggingSnippet = snippets[btn.dataset.snippetType];
+                e.dataTransfer.setData("text/plain", draggingSnippet); // required for Firefox
+            });
+
+            btn.addEventListener('dragend', () => {
+                draggingSnippet = null;
+                if (highlightedTagMarker) {
+                    highlightedTagMarker.clear();
+                    highlightedTagMarker = null;
+                }
+            });
+        });
+
+        let highlightedTagMarker = null;
+
+        htmlEditor.getWrapperElement().addEventListener('dragover', function(e) {
+            if (!draggingSnippet) return;
+
+            e.preventDefault();
+            const pos = htmlEditor.coordsChar({ left: e.clientX, top: e.clientY });
+
+            const token = htmlEditor.getTokenAt(pos);
+            const doc = htmlEditor.getDoc();
+
+            // Try to find the enclosing tag
+            const line = doc.getLine(pos.line);
+
+            const tagMatch = line.slice(0, token.end).match(/<(\w+)[^>]*?>/);
+            if (tagMatch) {
+                const tagName = tagMatch[1];
+
+                // Find start and end tag positions (simple approach)
+                const startLine = pos.line;
+                let endLine = startLine;
+                for (let i = startLine + 1; i < doc.lineCount(); i++) {
+                    if (doc.getLine(i).includes(`</${tagName}`)) {
+                        endLine = i;
+                        break;
+                    }
+                }
+
+                if (highlightedTagMarker) highlightedTagMarker.clear();
+                highlightedTagMarker = htmlEditor.markText(
+                    { line: startLine, ch: 0 },
+                    { line: endLine + 1, ch: 0 },
+                    { className: 'tag-highlight' }
+                );
+            }
+        });
+
+        htmlEditor.getWrapperElement().addEventListener('drop', function(e) {
+            e.preventDefault();
+            if (!draggingSnippet) return;
+
+            const pos = htmlEditor.coordsChar({ left: e.clientX, top: e.clientY });
+            const doc = htmlEditor.getDoc();
+            const line = doc.getLine(pos.line);
+
+            const tagMatch = line.slice(0, pos.ch).match(/<(\w+)[^>]*?>/);
+            if (tagMatch) {
+                const tagName = tagMatch[1];
+
+                // Find closing tag line
+                for (let i = pos.line + 1; i < doc.lineCount(); i++) {
+                    if (doc.getLine(i).includes(`</${tagName}`)) {
+                        const insertPos = { line: i, ch: 0 };
+
+                        doc.replaceRange(`    ${draggingSnippet}\n`, insertPos);
+                        updatePreview();
+                        break;
+                    }
+                }
+            }
+
+            if (highlightedTagMarker) {
+                highlightedTagMarker.clear();
+                highlightedTagMarker = null;
+            }
+
+            draggingSnippet = null;
+        });
+
+
     </script>
 </body>
 </html>
