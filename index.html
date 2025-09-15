@@ -18,10 +18,29 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.7/mode/javascript/javascript.min.js"></script>
 
     <!-- Linting Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/csslint/1.0.5/csslint.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jshint/2.13.4/jshint.min.js"></script>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.7/addon/lint/lint.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.7/addon/lint/javascript-lint.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.7/addon/lint/css-lint.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/HTMLHint/0.14.0/htmlhint.min.js"></script>
+
+    <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/HTMLHint/0.14.0/htmlhint.min.js"></script> -->
+
+    <!-- Hinting CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.7/addon/hint/show-hint.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.7/addon/hint/xml-hint.min.js"></script>
+
+    <!-- Hinting Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.7/addon/hint/show-hint.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.7/addon/hint/html-hint.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.7/addon/hint/css-hint.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.7/addon/hint/javascript-hint.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.7/addon/edit/closetag.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.7/addon/edit/closebrackets.min.js"></script>
+
+
 
     <style>
         * {
@@ -39,6 +58,7 @@
         }
         .editor-container {
             padding: 10px;
+            margin-top: 50px;
             box-sizing: border-box;
             display: flex;
             flex-direction: column;
@@ -46,11 +66,41 @@
             width: 50%; /* Initial width set to 50% */
             transition: width 0.1s ease;
             overflow-y: auto; /* Allow scrolling if content overflows */
+            background-color: rgb(12, 11, 12);
+        }
+        .editor-title-container {
+            background-color: black;
+            margin-top: 50px;
+            display: flex;
+            align-items: center;        /* vertical centering */
+            justify-content: center; /* or center if you want horizontal centering */
+            height: 30px;
+            padding: 0 16px;             /* optional left/right spacing */
+            box-sizing: border-box;
+            background: linear-gradient(165deg, rgb(30, 20, 34), rgb(36, 12, 12), rgb(59, 52, 30), rgb(38, 15, 39),rgb(30, 20, 34), rgb(36, 12, 12), rgb(59, 52, 30), rgb(38, 15, 39));
+            background-size: 400% 400%;
+            animation: rgbWave 10s ease infinite;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+        }
+        .editor-title-container h3 {
+            margin: 0;
+            padding: 0;
+            font-size: 18px;
+            line-height: 1.2;
+            color: white;
+            position: relative;
+            top: 1px; /* or try 2px if needed */
+        }
+        .CodeMirror {
+            border-bottom-left-radius: 20px;
+            border-bottom-right-radius: 20px;
+
         }
         .editor {
             height: 150px;
             margin-bottom: 20px;
-            background: #333;
+            background: #151218;
             color: #fff;
             padding: 10px;
             font-family: monospace;
@@ -60,15 +110,16 @@
             resize: none;
             min-height: 150px;
             overflow-y: auto;
+            border-radius: 30px;
         }
         .preview-container {
-            padding: 10px;
+            padding: 0px;
             box-sizing: border-box;
             background-color: #fff;
             border-left: 2px solid #ddd;
-            height: 100vh;
+            height: 100%;
             position: fixed;
-            top: 0;
+            top: 50px;
             right: 0;
             display: flex;
             flex-direction: column;
@@ -79,7 +130,7 @@
         }
         iframe {
             width: 100%;
-            height: 90%;
+            height: 100%;
             border: none;
         }
         .snippets {
@@ -106,55 +157,72 @@
         .snippet-btn:hover {
             background: #0056b3;
         }
-        .editor-container, .preview-container {
-            display: flex;
-            flex-direction: column;
-        }
-        .editor-container h3 {
-            font-size: 17px;
-            color: rgba(240, 240, 255);
-            margin: 30px auto 10px auto;
-        }
-
         /* Update the resizer to be wider */
         #resizer {
-            background: #888;
-            cursor: ew-resize;
-            width: 20px; /* Made the divider wider (20px) */
-            height: 100vh;
             position: fixed;
-            top: 0;
-            left: 48%;  /* Adjusted to move the divider to the left */
+            top: 50%; /* Vertically center */
+            left: 50%; /* Horizontally center */
+            transform: translate(-50%, -50%);  /* Shift left and up by half width and height */
+            width: 4px;
+            height: 100%; /* Vertical height */
             transition: left 0.1s ease;
+            cursor: ew-resize;
             z-index: 10;
+            opacity: .5;
+            background: linear-gradient(180deg, red, orange, indigo, violet);
+            background-size: 400% 400%;
+            animation: rgbWave 30s ease infinite;
         }
+
+        @keyframes rgbWave {
+            0% {
+                background-position: 50% 0%;
+            }
+            50% {
+                background-position: 50% 100%;
+            }
+            100% {
+                background-position: 50% 0%;
+            }
+        }
+
+        .header {
+            background-color: black;
+            height: 50px;
+            width: 100%;
+            position: fixed;
+            z-index: 99999;
+        }
+
     </style>
 </head>
 <body>
+    <div class="header"></div>
 
     <div class="editor-container" id="editor-container">
-        <h3>HTML Editor</h3>
+        <div class="editor-title-container"><h3>HTML Editor</h3></div>
         <textarea id="html-code" class="editor" placeholder="Write your HTML here..."></textarea>
         
-        <h3>CSS Editor</h3>
+        <div class="editor-title-container"><h3>CSS Editor</h3></div>
         <textarea id="css-code" class="editor" placeholder="Write your CSS here..."></textarea>
         
-        <h3>JS Editor</h3>
+        <div class="editor-title-container"><h3>JS Editor</h3></div>
         <textarea id="js-code" class="editor" placeholder="Write your JavaScript here..."></textarea>
         
+        <!--
         <div class="snippets">
             <h4>Code Snippets</h4>
             <button class="snippet-btn" onclick="insertSnippet('html')">Basic HTML Template</button>
             <button class="snippet-btn" onclick="insertSnippet('css')">Flexbox Layout</button>
             <button class="snippet-btn" onclick="insertSnippet('js')">Alert Function</button>
         </div>
+        -->
     </div>
 
     <!-- Resizable Divider -->
     <div id="resizer"></div>
 
     <div class="preview-container" id="preview-container">
-        <h3>Live Preview</h3>
         <iframe id="preview"></iframe>
     </div>
 
@@ -164,13 +232,21 @@
             mode: 'htmlmixed',
             theme: 'dracula',
             lineNumbers: true,
-            indentUnit: 4,
             smartIndent: true,
+            indentUnit: 4,
+            autoCloseTags: true,
+            autoCloseBrackets: true,
             lint: true,
             extraKeys: {
-                "Tab": function(cm) {
-                    cm.replaceSelection("    ", "end");
-                }
+                "Tab": "autocomplete",  // Trigger autocomplete manually
+                "Tab": cm => cm.replaceSelection("    ", "end")
+            }
+        });
+
+        // Auto trigger autocomplete as you type
+        htmlEditor.on("inputRead", function(cm, change) {
+            if (change.text[0].match(/[\w<]/)) {
+                cm.showHint({ completeSingle: false });
             }
         });
 
@@ -178,13 +254,20 @@
             mode: 'css',
             theme: 'dracula',
             lineNumbers: true,
-            indentUnit: 4,
             smartIndent: true,
+            indentUnit: 4,
             lint: true,
+            autoCloseBrackets: true,
             extraKeys: {
-                "Tab": function(cm) {
-                    cm.replaceSelection("    ", "end");
-                }
+                "Tab": "autocomplete",
+                "Tab": cm => cm.replaceSelection("    ", "end")
+            }
+        });
+
+        // Show hints as user types
+        cssEditor.on("inputRead", function(cm, change) {
+            if (change.text[0].match(/[\w-]/)) {
+                cm.showHint({ completeSingle: false });
             }
         });
 
@@ -192,25 +275,55 @@
             mode: 'javascript',
             theme: 'dracula',
             lineNumbers: true,
-            indentUnit: 4,
             smartIndent: true,
+            indentUnit: 4,
             lint: true,
+            autoCloseBrackets: true,
             extraKeys: {
-                "Tab": function(cm) {
-                    cm.replaceSelection("    ", "end");
-                }
+                "Tab": "autocomplete",
+                "Tab": cm => cm.replaceSelection("    ", "end")
+            }
+        });
+
+        // Show hints as user types
+        jsEditor.on("inputRead", function(cm, change) {
+            if (change.text[0].match(/[\w\.]/)) {
+                cm.showHint({ completeSingle: false });
             }
         });
 
         // Function to update the live preview
         function updatePreview() {
             const htmlCode = htmlEditor.getValue();
-            const cssCode = `<style>${cssEditor.getValue()}</style>`;
-            const jsCode = `<script>${jsEditor.getValue()}<\/script>`; // Escape closing script tag
+            const cssCode = cssEditor.getValue();
+            const jsCode = jsEditor.getValue();
 
-            const iframeDoc = document.getElementById('preview').contentDocument || document.getElementById('preview').contentWindow.document;
+            const fullDocument = `
+                <!DOCTYPE html>
+                <html lang="en">
+                <head>
+                    <style>
+                        ${cssCode}
+                        html, body {height: 100%;}
+                        </style>
+                </head>
+                <body>
+                    ${htmlCode}
+                    <script>
+                        try {
+                            ${jsCode}
+                        } catch (e) {
+                            console.error(e);
+                        }
+                    <\/script>
+                </body>
+                </html>
+            `;
+
+            const iframe = document.getElementById('preview');
+            const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
             iframeDoc.open();
-            iframeDoc.write(htmlCode + cssCode + jsCode);
+            iframeDoc.write(fullDocument);
             iframeDoc.close();
         }
 
@@ -235,44 +348,70 @@
             updatePreview();
         }
 
-        // Resizing logic for the draggable divider
         const resizer = document.getElementById('resizer');
         const editorContainer = document.getElementById('editor-container');
         const previewContainer = document.getElementById('preview-container');
+
         let isResizing = false;
 
-        resizer.addEventListener('mousedown', function(e) {
+        // Create overlay once
+        const overlay = document.createElement('div');
+        overlay.style.position = 'fixed';
+        overlay.style.top = '0';
+        overlay.style.left = '0';
+        overlay.style.width = '100vw';
+        overlay.style.height = '100vh';
+        overlay.style.cursor = 'col-resize';
+        overlay.style.zIndex = '9999'; // on top of iframe
+        overlay.style.backgroundColor = 'rgba(0,0,0,0)'; // fully transparent
+
+        function startResizing(e) {
+            e.preventDefault();
             isResizing = true;
-            document.addEventListener('mousemove', handleMouseMove);
-            document.addEventListener('mouseup', function() {
-                isResizing = false;
-                document.removeEventListener('mousemove', handleMouseMove);
-            });
-        });
+
+            document.body.appendChild(overlay); // add overlay
+
+            overlay.addEventListener('mousemove', handleMouseMove);
+            overlay.addEventListener('mouseup', stopResizing);
+        }
 
         function handleMouseMove(e) {
-            if (isResizing) {
-                const editorWidth = e.clientX;
-                const totalWidth = window.innerWidth;
-                const editorWidthPercentage = (editorWidth / totalWidth) * 100;
+            if (!isResizing) return;
+            const editorWidth = e.clientX;
+            const totalWidth = window.innerWidth;
+            const editorWidthPercentage = (editorWidth / totalWidth) * 100;
 
-                editorContainer.style.width = `${editorWidthPercentage}%`;
-                previewContainer.style.width = `${99 - editorWidthPercentage}%`;
-                resizer.style.left = `${editorWidthPercentage}%`;
+            editorContainer.style.width = `${editorWidthPercentage}%`;
+            previewContainer.style.width = `${100 - editorWidthPercentage}%`;
+            resizer.style.left = `${editorWidthPercentage}%`;
+        }
+
+        function stopResizing() {
+            isResizing = false;
+
+            // remove overlay and listeners
+            overlay.removeEventListener('mousemove', handleMouseMove);
+            overlay.removeEventListener('mouseup', stopResizing);
+            if (overlay.parentNode) {
+                overlay.parentNode.removeChild(overlay);
             }
         }
+
+        resizer.addEventListener('mousedown', startResizing);
 
         // Set the initial preview width based on window load
         window.addEventListener('load', function() {
             const initialWidth = 50; // Start with 50% width
             editorContainer.style.width = `${initialWidth}%`;
-            previewContainer.style.width = `${99 - initialWidth}%`;
+            previewContainer.style.width = `${100 - initialWidth}%`;
             resizer.style.left = `${initialWidth}%`;
+
+            cssEditor.setValue("body {background-color:rgb(10,10,10); color:white; display:flex;} h1{margin:auto; font-size:4rem}");
+            htmlEditor.setValue("<h1>Yoeri's code editor</h1>");
         });
 
         // Initial preview update
         updatePreview();
     </script>
-
 </body>
 </html>
