@@ -31,17 +31,17 @@ To run CodeHerring locally:
 
 1. **Clone the repository**:
 
-```bash
+```
 git clone https://github.com/YourUsername/CodeHerring.git
 cd CodeHerring
 Start a local HTTP server (required for ES Modules):
 
-bash
-Code kopiëren
+
 # Python 3
 python -m http.server 5500
 Open your browser at http://localhost:5500
 ```
+
 File Structure
 graphql
 Code kopiëren
