@@ -1,8 +1,8 @@
 
         // init modules 
 
-        import { initSnippets } from "./snippets";
-        import { initEditors } from "./editors";
+        import { initSnippets } from "./snippets.js";
+        import { initEditors } from "./editors.js";
         // declare variables in outer scope
         let htmlEditor, cssEditor, jsEditor;
         let snippets;
