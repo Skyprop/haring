@@ -43,15 +43,14 @@ Open your browser at http://localhost:5500
 ```
 ```
 File Structure
-graphql
-Code kopiëren
+
 CodeHerring/
-├── index.html          # Main HTML page
-├── main.js             # Initializes editors and preview
-├── editors.js          # Module for CodeMirror editor setup
-├── snippets.js         # Module for predefined snippets
-├── style.css           # Global styles
-└── README.md           # Project README
+  ├── index.html          # Main HTML page
+  ├── main.js             # Initializes editors and preview
+  ├── editors.js          # Module for CodeMirror editor setup
+  ├── snippets.js         # Module for predefined snippets
+  ├── style.css           # Global styles
+  └── README.md           # Project README
 ```
 
 Usage
