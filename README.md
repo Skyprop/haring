@@ -41,7 +41,7 @@ Start a local HTTP server (required for ES Modules):
 python -m http.server 5500
 Open your browser at http://localhost:5500
 ```
-
+```
 File Structure
 graphql
 Code kopiëren
@@ -52,6 +52,8 @@ CodeHerring/
 ├── snippets.js         # Module for predefined snippets
 ├── style.css           # Global styles
 └── README.md           # Project README
+```
+
 Usage
 Open the editor in your browser.
 
