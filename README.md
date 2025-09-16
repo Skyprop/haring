@@ -41,7 +41,7 @@ Code kopiëren
 # Python 3
 python -m http.server 5500
 Open your browser at http://localhost:5500
-
+```
 File Structure
 graphql
 Code kopiëren
